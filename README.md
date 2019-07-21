@@ -11,13 +11,13 @@ In my environment, Mysql Server takes some disk sapce from SAN disk, NFS server 
 ### 1.2 How to generate the Vcenter hardware resource report?
 1. Collect Mysql server zpool usage [Bash + Ansible]
 2. Collect NFS server zpool usage [Bash + Ansible]
-3. Cpllect ESXi locat disk usage [Bash + Ansible]
+3. Cpllect ESXi local disk usage [Bash + Ansible]
 4. Collect ESXi shared disk usage [Bash + Ansible]
 5. Collect ESXi CPU and Memory usage [Powershell]
 6. Generate Execl Report [Python]
 
 ### 1.3 Output
-- Step 1 - 4 can be putr into [disk_usage.sh](generate-vcenter-hardware-resource-report/disk_usage.sh). Output is similar like:
+- Step 1 - 4 can be put into [disk_usage.sh](generate-vcenter-hardware-resource-report/disk_usage.sh). Output is similar like:
 ```bash
 PLAY [mysql] *******************************************************************
 
@@ -129,4 +129,115 @@ fi
 echo "Hi team, please review the MEL DC Hardware Resource Usage Report" | mutt -a $WORK_DIR/DataCenterDiskCapacity/MelDataCenterHardwareUsageReport.$TODAY.xlsx -s "MEL DC Hardware Resource Usage Report ${TODAY}" -- $requestor1 $requestor2 
 ```
 
-Output is similar like: ![Example](generate-vcenter-hardware-resource-report/MelDC.JPG)
+Output is similar like: ![MelDC](generate-vcenter-hardware-resource-report/MelDC.JPG)
+
+## 2 Generate hardware resource report for Linux servers
+
+### 2.1 Requirements:
+- local disks, share disks usage
+- CPU and Memory usage
+
+In my environment, I have a firewall server, it is also mounted disk which need to monitor, the firewall can be accessed through ssh via port 2222.
+
+### 2.2 How to generate the Vcenter hardware resource report?
+1. Collect zpool usage for lxd and shared disks [Bash + Ansible]
+2. Collect local disk usage [Bash + Ansible]
+3. Cpllect Memory usage [Bash + Ansible]
+4. Collect CPU usage [Bash + Ansible]
+5. Collect usage for Firewall seperately [Bash + Ansible]
+6. Generate Execl Report [Python]
+
+### 2.3 Output
+
+Code can be found here. [generate_linux_hardware_resource_usage_report.sh](generate_linux_hardware_resource_usage_report/generate_linux_hardware_resource_usage_report.sh).
+- Step 1 - 4 output is similar like:
+```bash
+PLAY [PROD] ********************************************************************
+
+TASK [Check the zpool usage] ***************************************************
+changed: [prod.exmaple.com]
+
+TASK [debug] *******************************************************************
+ok: [prod.exmaple.com] => {
+    "myoutput.stdout_lines": [
+        "NAME          SIZE  ALLOC   FREE  EXPANDSZ   FRAG    CAP  DEDUP  HEALTH  ALTROOT",
+        "lxd           298G  59.0G   239G         -    60%    19%  1.00x  ONLINE  -",
+        "shared_prod  1.16T   286G   906G         -    25%    24%  1.00x  ONLINE  -"
+    ]
+}
+
+TASK [Check the local disk usage] **********************************************
+changed: [prod.exmaple.com]
+
+TASK [debug] *******************************************************************
+ok: [prod.exmaple.com] => {
+    "myoutput.stdout_lines": [
+        "Filesystem                                                                   Size  Used Avail Use% Mounted on",
+        "/dev/xvda2                                                                    97G  7.2G   90G   8% /"
+    ]
+}
+
+TASK [Check the Memory Usage] **************************************************
+changed: [prod.exmaple.com]
+
+TASK [debug] *******************************************************************
+ok: [prod.exmaple.com] => {
+    "myoutput.stdout_lines": [
+        "Memory_Usage: 32155 16431 15723"
+    ]
+}
+
+TASK [Check the CPU Information] ***********************************************
+changed: [prod.exmaple.com]
+
+TASK [debug] *******************************************************************
+ok: [prod.exmaple.com] => {
+    "myoutput.stdout_lines": [
+        "CPU_Info: Intel(R)_Xeon(R)_CPU_E5-2683_v3_@_2.00GHz 16 93"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+prod.exmaple.com             : ok=8    changed=4    unreachable=0    failed=0
+```
+
+- Step 5 output is similar like:
+```bash
+PLAY [FW] **********************************************************************
+
+TASK [Check the local disk usage] **********************************************
+changed: [fw.exmaple.com]
+
+TASK [debug] *******************************************************************
+ok: [fw.exmaple.com] => {
+    "myoutput.stdout_lines": [
+        "Filesystem                     Size    Used   Avail Capacity  Mounted on",
+        "/dev/ufsid/588f872bceb277db    886G    450G    366G    55%    /"
+    ]
+}
+
+TASK [Check the Memory] ********************************************************
+changed: [fw.exmaple.com]
+
+TASK [debug] *******************************************************************
+ok: [fw.exmaple.com] => {
+    "myoutput.stdout_lines": [
+        "Memory_Usage: 8116.93 1214.46 6902.46"
+    ]
+}
+
+TASK [Check the CPU Information] ***********************************************
+changed: [fw.exmaple.com]
+
+TASK [debug] *******************************************************************
+ok: [fw.exmaple.com] => {
+    "myoutput.stdout_lines": [
+        "CPU_Info: Intel(R)_Xeon(R)_CPU_E3-1270_v3_@_3.50GHz 8 99"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+fw.exmaple.com             : ok=6    changed=3    unreachable=0    failed=0
+```
+- Step 6 output is similar like:
+![EUDC](generate_linux_hardware_resource_usage_report/EUDC.JPG)
