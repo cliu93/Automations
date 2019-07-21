@@ -1,14 +1,14 @@
 # Automations
 Some automation ideas, I use [Rundeck](www.rundeck.com) to integreate with Bash shell, Ansible, Python script and Poweshell command.
 
-## Generate Vcenter hardware resource report
-### Requirements:
+## 1 Generate Vcenter hardware resource report
+### 1.1 Requirements:
 - ESXi local disks, SAN disks and NAS share disks usage
 - ESXi CPU and Memory usage
 
 In my environment, Mysql Server takes some disk sapce from SAN disk, NFS server takes some disk space from NAS share disk. The other disk space from SAN and NAS are all mounted on all the ESXi servers.
 
-### How to generate the Vcenter hardware resource report?
+### 1.2 How to generate the Vcenter hardware resource report?
 1. Collect Mysql server zpool usage [Bash + Ansible]
 2. Collect NFS server zpool usage [Bash + Ansible]
 3. Cpllect ESXi locat disk usage [Bash + Ansible]
@@ -16,7 +16,7 @@ In my environment, Mysql Server takes some disk sapce from SAN disk, NFS server 
 5. Collect ESXi CPU and Memory usage [Powershell]
 6. Generate Execl Report [Python]
 
-### Output
+### 1.3 Output
 - Step 1 - 4 can be putr into [disk_usage.sh](generate-vcenter-hardware-resource-report/disk_usage.sh). Output is similar like:
 ```bash
 PLAY [mysql] *******************************************************************
