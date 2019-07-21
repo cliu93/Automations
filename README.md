@@ -105,4 +105,28 @@ vsphere01.example.com Connected       PoweredOn      40       21050       87960 
 vsphere03.example.com Connected       PoweredOn      40       15764       87960       245,847       255,908   6.5.0
 vsphere02.example.com Connected       PoweredOn      40       39644       87960       232,036       255,908   6.5.0
 ```
-- Step 6 is [vcenter_hardware_resource_report.py](generate-vcenter-hardware-resource-report/vcenter_hardware_resource_report.py). Output is similar like: ![Example](generate-vcenter-hardware-resource-report/MelDC.JPG)
+- Step 6 is [vcenter_hardware_resource_report.py](generate-vcenter-hardware-resource-report/vcenter_hardware_resource_report.py). 
+
+The way to run the python script is:
+```bash
+#!/bin/bash
+WORK_DIR=/var/lib/rundeck/work/ansible
+TODAY=$(date "+%Y%m%d")
+
+# Generate the excel file
+cd $WORK_DIR/DataCenterDiskCapacity
+source venv/bin/activate
+python MelDcDiskUsage.py
+
+if [ $? -eq 0 ]; then
+    echo "Generate Excel file successfully"
+else
+    echo "Generate Excel file failed, please check with GPSSS INF team"
+    exit 1
+fi
+
+# Send Email with the excel file
+echo "Hi team, please review the MEL DC Hardware Resource Usage Report" | mutt -a $WORK_DIR/DataCenterDiskCapacity/MelDataCenterHardwareUsageReport.$TODAY.xlsx -s "MEL DC Hardware Resource Usage Report ${TODAY}" -- $requestor1 $requestor2 
+```
+
+Output is similar like: ![Example](generate-vcenter-hardware-resource-report/MelDC.JPG)
