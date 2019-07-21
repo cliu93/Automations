@@ -1,6 +1,10 @@
 # Automations
 Some automation ideas, I use [Rundeck](www.rundeck.com) to integreate with Bash shell, Ansible, Python script and Poweshell command.
 
+# Table of Contents
+- [1 Generate Vcenter hardware resource report](#1-generate-vcenter-hardware-resource-report)
+- [2 Generate hardware resource report for Linux servers](#2-generate-hardware-resource-report-for-linux-servers)
+
 ## 1 Generate Vcenter hardware resource report
 ### 1.1 Requirements:
 - ESXi local disks, SAN disks and NAS share disks usage
