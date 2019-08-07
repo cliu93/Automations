@@ -17,7 +17,7 @@ cat << EOF > @option.workdir@/tmp/$vmhostname.yml
   tasks:
   - name: Take snapshot
     shell: |
-      #lxc snapshot $containername $snapshotname
+      lxc snapshot $containername $snapshotname
       lxc info $containername | grep -A100 "Snapshots"
     register: my
   - debug: var=my.stdout_lines
