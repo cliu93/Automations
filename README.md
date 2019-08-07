@@ -245,3 +245,80 @@ fw.exmaple.com             : ok=6    changed=3    unreachable=0    failed=0
 ```
 - Step 6 output is similar like:
 ![EUDC](generate_linux_hardware_resource_usage_report/EUDC.JPG)
+
+## 3 Create lxd Ubuntu containers snapshot and then do apt upgrade
+### 3.1 Requirements:
+- Having a good inventory of containers.
+- Having a Rundeck procedure to do updates.
+
+Something like:
+- lxc snapshot
+- lxc exec apt-get update && apt-get upgrade
+- lxc stop
+- lxc start
+### 3.2 Output
+1. lxc snapshot [Bash + Ansible]
+```
+###### Step 1: Go to vm-ubuntutest-01.test-01.b2be.com to run snapnshot for mcon-ubuntutest ######
+
+PLAY [all] *********************************************************************
+
+TASK [Take snapshot] ***********************************************************
+changed: [vm-ubuntutest-01.test-01.b2be.com]
+
+TASK [debug] *******************************************************************
+ok: [vm-ubuntutest-01.test-01.b2be.com] => {
+    "my.stdout_lines": [
+        "Snapshots:", 
+        "  upgrade-20190807 (taken at 2019/08/07 04:21 UTC) (stateless)"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+vm-ubuntutest-01.test-01.b2be.com : ok=2    changed=1    unreachable=0    failed=0   
+
+###### Step 2: Go to mcon-ubuntutest to run apt-get update and upgrade ######
+
+```
+2. apt-get update and apt-get upgrade [Bash + Ansible]
+```
+###### Step 2: Go to mcon-ubuntutest to run apt-get update and upgrade ######
+
+PLAY [all] *********************************************************************
+
+TASK [apt-get update and upgrade] **********************************************
+ [WARNING]: Could not find aptitude. Using apt-get instead.
+ok: [mcon-ubuntutest]
+
+PLAY RECAP *********************************************************************
+mcon-ubuntutest            : ok=1    changed=0    unreachable=0    failed=0   
+```
+3. Reboo the container [Bash + Ansible]
+```
+###### Step 3: Go to vm-ubuntutest-01.test-01.b2be.com to reboot mcon-ubuntutest ######
+
+PLAY [all] *********************************************************************
+
+TASK [Stop container mcon-ubuntutest] ******************************************
+changed: [vm-ubuntutest-01.test-01.b2be.com]
+
+TASK [debug] *******************************************************************
+ok: [vm-ubuntutest-01.test-01.b2be.com] => {
+    "my.stdout_lines": [
+        "Status: Stopped"
+    ]
+}
+
+TASK [Start container mcon-ubuntutest] *****************************************
+changed: [vm-ubuntutest-01.test-01.b2be.com]
+
+TASK [debug] *******************************************************************
+ok: [vm-ubuntutest-01.test-01.b2be.com] => {
+    "my.stdout_lines": [
+        "Status: Running"
+    ]
+}
+
+PLAY RECAP *********************************************************************
+vm-ubuntutest-01.test-01.b2be.com : ok=4    changed=2    unreachable=0    failed=0   
+```
