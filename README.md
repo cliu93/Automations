@@ -4,6 +4,7 @@ Some automation ideas, I use [Rundeck](www.rundeck.com) to integreate with Bash 
 # Table of Contents
 - [1 Generate Vcenter hardware resource report](#1-generate-vcenter-hardware-resource-report)
 - [2 Generate hardware resource report for Linux servers](#2-generate-hardware-resource-report-for-linux-servers)
+- [3 Create lxd Ubuntu containers snapshot and then do apt upgrade](#3-create-lxd-ubuntu-containers-snapshot-and-then-do-apt-upgrade)
 
 ## 1 Generate Vcenter hardware resource report
 ### 1.1 Requirements:
